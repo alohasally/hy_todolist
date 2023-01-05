@@ -26,21 +26,19 @@ const Home = ({ props }) => {
   }, []);
 
   const handleClickComplete = (id) => () => {
-    setTodoData(
-      todoData.map((data) =>
-        data.id === id ? { ...data, done: !data.done } : data
-      )
+    const newTodoData = todoData.map((data) =>
+      data.id === id ? { ...data, done: !data.done } : data
     );
-    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
+    setTodoData(newTodoData);
+    localStorage.setItem("todoItems", JSON.stringify(newTodoData));
   };
 
   const handleImportant = (id) => () => {
-    setTodoData(
-      todoData.map((data) =>
-        data.id === id ? { ...data, isImportant: !data.isImportant } : data
-      )
+    const newTodoData = todoData.map((data) =>
+      data.id === id ? { ...data, isImportant: !data.isImportant } : data
     );
-    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
+    setTodoData(newTodoData);
+    localStorage.setItem("todoItems", JSON.stringify(newTodoData));
   };
 
   // const handleChangeTodo = (id, newTodo) => {
@@ -58,15 +56,15 @@ const Home = ({ props }) => {
   const handleChange = (id) => (e) => {
     const { value: newTodo } = e.target;
     setTodoItem(newTodo);
-    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
-    setTodoData(
-      todoData.map((data) => {
-        if (data.id === id) {
-          data.todo = newTodo;
-        }
-        return data;
-      })
-    );
+    localStorage.setItem("todoItems", JSON.stringify(newTodo));
+    const newTodoData = todoData.map((data) => {
+      if (data.id === id) {
+        data.todo = newTodo;
+      }
+      return data;
+    });
+    setTodoData(newTodoData);
+    localStorage.setItem("todoItems", JSON.stringify(newTodoData));
   };
 
   const handleDelete = (e) => {
@@ -75,8 +73,9 @@ const Home = ({ props }) => {
   };
 
   const handleDeleteItem = (id) => () => {
-    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
-    setTodoData(todoData.filter((data) => data.id !== id));
+    const newTodoData = todoData.filter((data) => data.id !== id);
+    setTodoData(newTodoData);
+    localStorage.setItem("todoItems", JSON.stringify(newTodoData));
   };
 
   // const handleUpdateTodo = (e) => () => {
