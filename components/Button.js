@@ -1,7 +1,14 @@
-import React from 'react'
+import React from "react";
 
-export const button = () => {
+const Button = () => {
   return (
-    <div>button</div>
-  )
-}
+    <button
+      type="submit"
+      className="h-9 w-full rounded-md bg-[#F65751] text-white text-sm"
+    >
+      저장
+    </button>
+  );
+};
+
+export default Button;

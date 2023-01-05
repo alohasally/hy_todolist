@@ -1,42 +1,29 @@
 import { data } from "autoprefixer";
 import Head from "next/head";
-import { useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import TodoItem from "../components/TodoItem";
+import AddTodoContainer from "../components/AddTodoContainer";
 
 const url = "http://localhost:3001/api/todo";
 
-const mockData = [
-  {
-    id: 1,
-    todo: "산책하기",
-    done: false,
-    isImportant: false,
-  },
-  {
-    id: 2,
-    todo: "수영하기",
-    done: false,
-    isImportant: false,
-  },
-  {
-    id: 3,
-    todo: "짖기",
-    done: false,
-    isImportant: false,
-  },
-  {
-    id: 4,
-    todo: "달리기",
-    done: false,
-    isImportant: false,
-  },
-];
-
 const Home = ({ props }) => {
-  const [todoData, setTodoData] = useState(mockData);
-  const [todoItem, setTodoItem] = useState(mockData.todo);
+  const [todoData, setTodoData] = useState([]);
+  const [todoItem, setTodoItem] = useState("");
+  const [todoDelete, setTodoDelete] = useState(false);
 
-  console.log(todoData);
+  //
+
+  // useEffect(() => {
+  //   let todoItemsArr = JSON.parse(localStorage.getItem("todoItems"));
+  //   console.log(JSON.parse(localStorage.getItem("todoItems")));
+  // }, []);
+
+  useEffect(() => {
+    const todos = JSON.parse(localStorage.getItem("todoItems"));
+    if (todos) {
+      setTodoData(todos);
+    }
+  }, []);
 
   const handleClickComplete = (id) => () => {
     setTodoData(
@@ -44,6 +31,7 @@ const Home = ({ props }) => {
         data.id === id ? { ...data, done: !data.done } : data
       )
     );
+    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
   };
 
   const handleImportant = (id) => () => {
@@ -52,6 +40,7 @@ const Home = ({ props }) => {
         data.id === id ? { ...data, isImportant: !data.isImportant } : data
       )
     );
+    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
   };
 
   // const handleChangeTodo = (id, newTodo) => {
@@ -69,6 +58,7 @@ const Home = ({ props }) => {
   const handleChange = (id) => (e) => {
     const { value: newTodo } = e.target;
     setTodoItem(newTodo);
+    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
     setTodoData(
       todoData.map((data) => {
         if (data.id === id) {
@@ -78,6 +68,30 @@ const Home = ({ props }) => {
       })
     );
   };
+
+  const handleDelete = (e) => {
+    e.preventDefault();
+    setTodoDelete(!todoDelete);
+  };
+
+  const handleDeleteItem = (id) => () => {
+    localStorage.setItem("todoItems", JSON.stringify([...todoData]));
+    setTodoData(todoData.filter((data) => data.id !== id));
+  };
+
+  // const handleUpdateTodo = (e) => () => {
+  //   setTodoData([
+  //     ...todoData,
+  //     {
+  //       id: Date.now,
+  //       todo: newTodo,
+  //       done: false,
+  //       isImportant: false,
+  //     },
+  //   ]);
+  //   return data;
+  // };
+  // console.log(setTodoData);
 
   return (
     <div className="h-screen flex flex-col bg-[#241722]">
@@ -109,20 +123,6 @@ const Home = ({ props }) => {
         </div>
       </nav>
 
-      {/* <div className="w-full px-4  my-4 space-y-3">
-        <form className="" onSubmit={()=>{}}>
-          <input
-            className="h-9 px-4 w-full rounded-md text-sm font-thin placeholder-white placeholder-opacity-70 bg-[#372935] opacity-90 text-white"
-            placeholder="오늘 할 일을 입력해 주세요"
-            name="value"
-            value={value}
-            onChange={handleChange}
-          />
-        </form>
-        <button className="h-9 mx-auto w-full rounded-md bg-[#F65751] text-white text-sm">
-          저장
-        </button>
-      </div> */}
       <span className="border-b-2 border-white border-opacity-10 "></span>
 
       <div className="px-4 py-4 flex justify-between">
@@ -131,7 +131,7 @@ const Home = ({ props }) => {
           <span className="text-white text-opacity-60">todo</span>
           <span className="text-white text-opacity-60">done</span>
         </div>
-        <div>
+        <div onClick={handleDelete}>
           <a className="text-white text-opacity-60">
             <svg
               class="w-6 h-6"
@@ -150,6 +150,9 @@ const Home = ({ props }) => {
           </a>
         </div>
       </div>
+      <div className="mx-4">
+        <AddTodoContainer todoData={todoData} setTodoData={setTodoData} />
+      </div>
 
       <div className=" px-4 py-8 ">
         <h2 className="text-xl font-semibold text-white mb-8">Todo</h2>
@@ -161,6 +164,8 @@ const Home = ({ props }) => {
             handleClickComplete={handleClickComplete}
             handleImportant={handleImportant}
             handleChange={handleChange}
+            todoDelete={todoDelete}
+            handleDeleteItem={handleDeleteItem}
           />
         ))}
       </div>
